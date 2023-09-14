@@ -1,8 +1,7 @@
 const { Sequelize } = require('sequelize');
-
-const sequelize = new Sequelize('users', 'root', 'root123', {
+const sequelize = new Sequelize(process.env.dbName, process.env.dbUserName, process.env.dbPassword, {
   host: 'localhost',
-  dialect: 'mysql',
+  dialect: process.env.database,
   logging: false
 });
 
@@ -12,5 +11,4 @@ try {
 } catch (error) {
   console.error('Unable to connect to the database:', error);
 }
-
 module.exports = sequelize;
