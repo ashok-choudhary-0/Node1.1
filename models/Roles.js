@@ -4,7 +4,7 @@ const Roles = sequelize.define('roles', {
   name: {
     type: DataTypes.STRING,
     unique: true,
-    allowNull: false   //for not allowed null values
+    allowNull: false
   },
   description: {
     type: DataTypes.STRING,
