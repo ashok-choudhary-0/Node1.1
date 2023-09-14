@@ -1,56 +1,56 @@
 const User = require("../models/Roles")
 const addUser = async (req, res) => {
   try {
-    let data = req.body;
-    const newUser = await User.create(data);
-    res.status(200).json({ data: newUser })
+    let { name, description } = req.body;
+    const newUser = await User.create({ name, description });
+    res.status(200).send(newUser)
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).send(err);
   }
 }
 const getAllUsers = async (req, res) => {
   try {
-    const data = await User.findAll({});
-    res.status(200).json({ data: data })
+    const allUsersData = await User.findAll({});
+    res.status(200).send(allUsersData)
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).send(err);
   }
 }
 const getSingleUser = async (req, res) => {
   try {
-    const data = await User.findOne({
+    const singleUserData = await User.findOne({
       where: {
         id: req.params.id
       }
     });
-    res.status(200).json({ data: data })
+    res.status(200).send(singleUserData)
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).send(err)
   }
 }
 const deleteUser = async (req, res) => {
   try {
-    const data = await User.destroy({
+    const deletedUserData = await User.destroy({
       where: {
         id: req.params.id
       }
     });
-    res.status(200).json({ data: data })
+    res.status(200).send(deletedUserData)
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).send(err)
   }
 }
 const updateUser = async (req, res) => {
-  const updatedData = req.body
+  let { name, description } = req.body;
   try {
-    const data = await User.update(updatedData, {
+    const data = await User.update({ name, description }, {
       where: {
         id: req.params.id
       }
     });
-    res.status(200).json({ data: data })
+    res.status(200).send(data)
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).send(err)
   }
 }
 module.exports = { addUser, getAllUsers, getSingleUser, deleteUser, updateUser }

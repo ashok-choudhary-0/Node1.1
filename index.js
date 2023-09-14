@@ -8,7 +8,7 @@ const router = require("./Router/userRouter")
 User.sync({ force: false });
 
 app.use(bodyParser.json())
-app.use(router)
+app.use("/role", router)
 app.listen(port, () => {
   console.log(`server is running on port ${port}`)
 })
