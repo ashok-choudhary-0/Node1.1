@@ -1,4 +1,3 @@
-const User = require("../models/Roles")
 const addUser = async (req, res) => {
   try {
     let { name, description } = req.body;

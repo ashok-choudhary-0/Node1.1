@@ -1,15 +1,17 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../dbConnection/connection')
-const User = sequelize.define('User', {
+const Roles = sequelize.define('roles', {
   name: {
     type: DataTypes.STRING,
-    unique: true
+    unique: true,
+    allowNull:false
   },
   description: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    allowNull:false
   }
 }, {
-  tableName: 'users',
+  tableName: 'roles',
   timestamps: false
 });
-module.exports = User 
+module.exports = Roles
