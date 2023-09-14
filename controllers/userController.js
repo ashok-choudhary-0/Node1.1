@@ -10,32 +10,32 @@ const addUser = async (req, res) => {
 }
 const getAllUsers = async (req, res) => {
   try {
-    const allUsersData = await User.findAll({});
-    res.status(200).send(allUsersData)
+    const allUsers = await User.findAll({});
+    res.status(200).send(allUsers)
   } catch (err) {
     res.status(500).send(err);
   }
 }
 const getSingleUser = async (req, res) => {
   try {
-    const singleUserData = await User.findOne({
+    const singleUser = await User.findOne({
       where: {
         id: req.params.id
       }
     });
-    res.status(200).send(singleUserData)
+    res.status(200).send(singleUser)
   } catch (err) {
     res.status(500).send(err)
   }
 }
 const deleteUser = async (req, res) => {
   try {
-    const deletedUserData = await User.destroy({
+    const deleteUser = await User.destroy({
       where: {
         id: req.params.id
       }
     });
-    res.status(200).send(deletedUserData)
+    res.status(200).send(deleteUser)
   } catch (err) {
     res.status(500).send(err)
   }
@@ -43,12 +43,12 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   let { name, description } = req.body;
   try {
-    const data = await User.update({ name, description }, {
+    const updateUser = await User.update({ name, description }, {
       where: {
         id: req.params.id
       }
     });
-    res.status(200).send(data)
+    res.status(200).send(updateUser)
   } catch (err) {
     res.status(500).send(err)
   }
