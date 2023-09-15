@@ -4,10 +4,10 @@ require('dotenv').config();
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 const rolesRouter = require("./router/rolesRouter");
-const userRouter = require("./router/userRouter")
+const registrationRouter = require("./router/registrationRouter")
 
 app.use("/role", rolesRouter)
-app.use("/user", userRouter)
+app.use("/user", registrationRouter)
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {

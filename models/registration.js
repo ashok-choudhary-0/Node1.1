@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../dbConnection/connection')
-const users = sequelize.define('user', {
+const registration = sequelize.define('registration', {
   username: {
     type: DataTypes.STRING,
     unique: true,
@@ -36,11 +36,9 @@ const users = sequelize.define('user', {
     unique: true
   }
 }, {
-  tableName: "user",
+  tableName: "registration",
   timestamps: false,
 })
 
 
-
-
-module.exports = users;
+module.exports = registration;
