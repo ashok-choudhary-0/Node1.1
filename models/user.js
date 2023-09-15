@@ -1,30 +1,30 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../dbConnection/connection')
-const registration = sequelize.define('registration', {
+const user = sequelize.define('user', {
   username: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     unique: true,
     allowNull: false
   },
   password: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   confirmPassword: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   email: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     unique: true,
     allowNull: false
   },
   firstName: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   lastName: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   roleId: {
@@ -36,9 +36,9 @@ const registration = sequelize.define('registration', {
     unique: true
   }
 }, {
-  tableName: "registration",
+  tableName: "user",
   timestamps: false,
 })
 
 
-module.exports = registration;
+module.exports = user;
