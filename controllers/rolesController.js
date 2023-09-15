@@ -1,4 +1,4 @@
-const Roles = require("./models/roles")
+const Roles = require("../models/roles")
 const addRole = async (req, res) => {
   try {
     let { name, description } = req.body;

@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../dbConnection/connection')
-const Roles = sequelize.define('roles', {
+const users = require("../models/users")
+const roles = sequelize.define('roles', {
   name: {
     type: DataTypes.STRING,
     unique: true,
@@ -14,4 +15,6 @@ const Roles = sequelize.define('roles', {
   tableName: 'roles',
   timestamps: false
 });
-module.exports = Roles
+roles.hasMany(users);
+
+module.exports = roles
