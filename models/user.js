@@ -32,8 +32,7 @@ const user = sequelize.define('user', {
     references: {
       model: 'roles',
       key: 'id'
-    },
-    unique: true
+    }
   }
 }, {
   tableName: "user",
