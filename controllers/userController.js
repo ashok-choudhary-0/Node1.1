@@ -4,11 +4,14 @@ const bcrypt = require('bcrypt');
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
-    if (password === confirmPassword) {
+
+    if (password == confirmPassword) {
       const searchIdInRoles = await roles.findOne({ where: { id: roleId } })
+      console.log(searchIdInRoles.id)
+      console.log(roleId)
       if (searchIdInRoles) {
         const hashedPassword = bcrypt.hashSync(password, 10);
-        const addedUser = await userModel.create({email, firstName, lastName, roleId, username, password: hashedPassword });
+        const addedUser = await userModel.create({ email, firstName, lastName, roleId, username, password: hashedPassword });
         res.status(200).send(addedUser);
       } else {
         res.status(500).send({ message: "role id not found" })

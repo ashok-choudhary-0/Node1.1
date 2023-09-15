@@ -4,8 +4,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 const rolesRouter = require("./router/rolesRouter");
-const userRouter = require("./router/userRouter")
-
+const userRouter = require("./router/userRouter");
 
 app.use("/role", rolesRouter)
 app.use("/user", userRouter)
