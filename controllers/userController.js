@@ -1,6 +1,7 @@
 const userModel = require("../models/user");
 const bcrypt = require('bcrypt');
-import { getRole } from "./rolesController";
+const jwt = require('jsonwebtoken');
+const { getRole } = require("../controllers/rolesController")
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -21,4 +22,21 @@ const userRegister = async (req, res) => {
   }
 }
 
-module.exports = { userRegister }
+const login = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const dbUser = await userModel.findOne({ where: { username: username } })
+    const match = await bcrypt.compare(password, dbUser.password);
+    if (match) {
+      const token = jwt.sign({ id: dbUser.id }, process.env.secKey);
+      res.status(200).send({ dbUser, token })
+    } else {
+      res.status(500).send({ message: "incorrect password" })
+    }
+  } catch (err) {
+    res.status(500).send(err)
+  }
+
+}
+
+module.exports = { userRegister, login }
