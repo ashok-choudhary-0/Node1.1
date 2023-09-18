@@ -26,13 +26,18 @@ const login = async (req, res) => {
   const { username, password } = req.body;
   try {
     const dbUser = await userModel.findOne({ where: { username: username } })
-    const match = await bcrypt.compare(password, dbUser.password);
-    if (match) {
-      const token = jwt.sign({ id: dbUser.id }, process.env.secKey);
-      res.status(200).send({ dbUser, token })
+    if (dbUser) {
+      const passwordMatch = await bcrypt.compare(password, dbUser.password);
+      if (passwordMatch) {
+        const token = jwt.sign({ id: dbUser.id, username: dbUser.username, password: dbUser.password }, process.env.secKey);
+        res.status(200).send({ dbUser, token })
+      } else {
+        res.status(500).send({ message: "incorrect password" })
+      }
     } else {
-      res.status(500).send({ message: "incorrect password" })
+      res.status(500).send({ message: "user not found" })
     }
+
   } catch (err) {
     res.status(500).send(err)
   }
