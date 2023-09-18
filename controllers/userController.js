@@ -43,12 +43,13 @@ const login = async (req, res) => {
 }
 
 const getUserData = async (req, res) => {
+  const { id } = req.headers
   try {
-    const userData = await userModel.findOne({ where: { id: req.headers.id } })
+    const userData = await userModel.findOne({ where: { id: id } })
     if (userData) {
       res.status(200).send(userData)
     } else {
-      res.status(500).send({ message: "enter valid token" })
+      res.status(500).send({ message: "Enter valid id" })
     }
   } catch (err) {
     res.status(500).send({ message: err })
