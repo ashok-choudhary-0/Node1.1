@@ -32,7 +32,7 @@ const login = async (req, res) => {
         const token = jwt.sign({ id: dbUser.id, username: dbUser.username, password: dbUser.password }, process.env.secKey);
         res.status(200).send({ dbUser, token })
       } else {
-        res.status(500).send({ message: "incorrect password" })
+        res.status(500).send({ message: "incorrect password please try again" })
       }
     } else {
       res.status(500).send({ message: "user not found" })
