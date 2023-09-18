@@ -1,4 +1,4 @@
-const Roles = require("./models/roles")
+const Roles = require("../models/roles")
 const addRole = async (req, res) => {
   try {
     let { name, description } = req.body;
@@ -16,13 +16,16 @@ const getAllRole = async (req, res) => {
     res.status(500).send(err);
   }
 }
+const getRole = async (id) => {
+  return await Roles.findOne({
+    where: {
+      id: id
+    }
+  });
+}
 const getSingleRole = async (req, res) => {
   try {
-    const singleRole = await Roles.findOne({
-      where: {
-        id: req.params.id
-      }
-    });
+    const singleRole = await getRole(req.params.id)
     res.status(200).send(singleRole)
   } catch (err) {
     res.status(500).send(err)
@@ -53,4 +56,4 @@ const updateRole = async (req, res) => {
     res.status(500).send(err)
   }
 }
-module.exports = { addRole, getAllRole, getSingleRole, deleteRole, updateRole }
+module.exports = { addRole, getAllRole, getSingleRole, deleteRole, updateRole, getRole }
