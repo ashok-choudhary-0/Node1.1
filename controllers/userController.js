@@ -1,5 +1,4 @@
 const userModel = require("../models/user");
-const roles = require("../models/roles")
 const bcrypt = require('bcrypt');
 import { getRole } from "./rolesController";
 const userRegister = async (req, res) => {
