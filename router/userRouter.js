@@ -5,6 +5,6 @@ const { validateToken } = require("../middlewares/userMiddleWare")
 
 userRouter.post("/register", userController.userRegister)
 userRouter.post("/login", userController.login)
-userRouter.get("/get", validateToken, userController.getData)
+userRouter.get("/get", validateToken, userController.getUserData)
 
 module.exports = userRouter;
