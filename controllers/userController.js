@@ -1,6 +1,7 @@
 const userModel = require("../models/user");
 const bcrypt = require('bcrypt');
 const { getRole } = require("../controllers/rolesController")
+const { validateToken } = require("../middlewares/userMiddleWare")
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -42,8 +43,17 @@ const login = async (req, res) => {
 
 }
 
+const getData = async (req, res) => {
+  try {
+    const userData = await userModel.findOne({ where: { id: req.headers.token } })
+    if (userData) {
+      res.status(200).send(userData)
+    } else {
+      res.status(500).send({ message: "invalid token" })
+    }
+  } catch (err) {
+    res.status(500).send({ message: err })
+  }
+}
 
-
-
-
-module.exports = { userRegister, login }
+module.exports = { userRegister, login, validateToken, getData }
