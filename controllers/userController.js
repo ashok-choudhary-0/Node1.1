@@ -1,6 +1,6 @@
 const userModel = require("../models/user");
 const bcrypt = require('bcrypt');
-import { getRole } from "./rolesController";
+const { getRole } = require("../controllers/rolesController")
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -21,4 +21,29 @@ const userRegister = async (req, res) => {
   }
 }
 
-module.exports = { userRegister }
+const login = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const dbUser = await userModel.findOne({ where: { username: username } })
+    if (dbUser) {
+      const passwordMatch = await bcrypt.compare(password, dbUser.password);
+      if (passwordMatch) {
+        res.status(200).send(dbUser)
+      } else {
+        res.status(500).send({ message: "incorrect password please try again" })
+      }
+    } else {
+      res.status(500).send({ message: "user not found" })
+    }
+
+  } catch (err) {
+    res.status(500).send(err)
+  }
+
+}
+
+
+
+
+
+module.exports = { userRegister, login }
