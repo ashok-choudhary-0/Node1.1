@@ -68,5 +68,14 @@ const deleteUserData = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
+const getAllUsersData = async (req, res) => {
+  const { page } = req.params
+  try {
+    const userData = await userModel.findAll({ limit: 10, offset: (page - 1) * 10 })
+    res.status(200).send(userData)
+  } catch (err) {
+    res.status(500).send({ message: err })
+  }
+}
 
-module.exports = { userRegister, login, getUserData, deleteUserData }
+module.exports = { userRegister, login, getUserData, deleteUserData, getAllUsersData }
