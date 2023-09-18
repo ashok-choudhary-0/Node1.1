@@ -45,7 +45,7 @@ const login = async (req, res) => {
 const getUserData = async (req, res) => {
   const { id } = req.headers
   try {
-    const userData = await userModel.findOne({ where: { id: id } })
+    const userData = await userModel.findOne({ where: { id } })
     if (userData) {
       res.status(200).send(userData)
     } else {
