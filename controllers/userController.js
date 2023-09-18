@@ -69,10 +69,15 @@ const deleteUserData = async (req, res) => {
   }
 }
 const getAllUsersData = async (req, res) => {
-  const { page } = req.params
+  const page = req.params.page
   try {
-    const userData = await userModel.findAll({ limit: 10, offset: (page - 1) * 10 })
-    res.status(200).send(userData)
+    const userData = await userModel.findAndCountAll({ limit: 10, offset: (page - 1) * 10 })
+    if (userData) {
+      res.status(200).send(userData)
+    } else {
+      res.status(500).send({ message: "oops data not found" })
+    }
+
   } catch (err) {
     res.status(500).send({ message: err })
   }
