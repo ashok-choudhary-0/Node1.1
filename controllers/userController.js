@@ -1,6 +1,5 @@
 const userModel = require("../models/user");
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { getRole } = require("../controllers/rolesController")
 const userRegister = async (req, res) => {
   try {
@@ -29,8 +28,7 @@ const login = async (req, res) => {
     if (dbUser) {
       const passwordMatch = await bcrypt.compare(password, dbUser.password);
       if (passwordMatch) {
-        const token = jwt.sign({ id: dbUser.id, username: dbUser.username, password: dbUser.password }, process.env.secKey);
-        res.status(200).send({ dbUser, token })
+        res.status(200).send(dbUser)
       } else {
         res.status(500).send({ message: "incorrect password please try again" })
       }
@@ -43,5 +41,9 @@ const login = async (req, res) => {
   }
 
 }
+
+
+
+
 
 module.exports = { userRegister, login }
