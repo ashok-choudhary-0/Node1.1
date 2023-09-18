@@ -55,5 +55,18 @@ const getUserData = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
+const deleteUserData = async (req, res) => {
+  const { id } = req.headers
+  try {
+    const userData = await userModel.destroy({ where: { id } })
+    if (userData) {
+      res.status(200).send({ message: "user deleted successfully" })
+    } else {
+      res.status(500).send({ message: "Enter valid id" })
+    }
+  } catch (err) {
+    res.status(500).send({ message: err })
+  }
+}
 
-module.exports = { userRegister, login, getUserData }
+module.exports = { userRegister, login, getUserData, deleteUserData }
