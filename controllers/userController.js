@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const { getRole } = require("../controllers/rolesController")
 const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
-var expiryTime;
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -24,6 +23,17 @@ const userRegister = async (req, res) => {
   }
 }
 
+const saveToken = async (id, token) => {
+  const currentTime = new Date();
+  const expiry = new Date(currentTime).setHours(currentTime.getHours() + 1);
+  const userAlreadyExist = await accessTokenModel.findOne({ where: { user_id: id } })
+  if (userAlreadyExist) {
+    await accessTokenModel.update({ access_token: token, expiry: expiry }, { where: { user_id: id } })
+  } else {
+    await accessTokenModel.create({ user_id: id, access_token: token, expiry: expiry })
+  }
+}
+
 const login = async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -31,7 +41,8 @@ const login = async (req, res) => {
     if (dbUser) {
       const passwordMatch = await bcrypt.compare(password, dbUser.password);
       if (passwordMatch) {
-        createAndSaveToken(dbUser.id)
+        const token = md5(`dbUser.username`)
+        saveToken(dbUser.id, token)
         res.status(200).send(dbUser)
       } else {
         res.status(500).send({ message: "incorrect password please try again" })
@@ -45,19 +56,7 @@ const login = async (req, res) => {
   }
 
 }
-const createAndSaveToken = async(id)=>{
-  const token = md5(`dbUser.username + dbUser.password`)
-  const currentTime = new Date();
-  const expiry = new Date(currentTime).setHours(currentTime.getHours() + 1);
-  const userAlready = await accessTokenModel.findOne({ where: { user_id: id } })
-  if (userAlready) {
-    await accessTokenModel.update({ access_token: token, expiry: expiry }, { where: { user_id: id } })
-  } else {
-    await accessTokenModel.create({ user_id: id, access_token: token, expiry: expiry })
-  }
-  expiryTime = expiry;
-  checkTokenExpired()
-}
+
 const getUserData = async (req, res) => {
   const { id } = req.headers
   try {
@@ -100,13 +99,8 @@ const limitUsersData = async (req, res) => {
 }
 
 
-const checkTokenExpired = async () => {
-  const currentTime = new Date();
-  if (currentTime <= expiryTime) {
-    return false;
-  } else {
-    return true;
-  }
-}
 
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, checkTokenExpired }
+
+
+
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData }
