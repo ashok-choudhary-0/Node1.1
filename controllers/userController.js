@@ -70,7 +70,7 @@ const deleteUserData = async (req, res) => {
 }
 const limitUsersData = async (req, res) => {
   const page = req.params.page
-  const limitValue = Number(req.params.limit)
+  const limitValue = Number(req.query.limit) || 10
   try {
     const userData = await userModel.findAndCountAll({ limit: limitValue, offset: (page - 1) * limitValue })
     if (userData.rows.length != 0) {
