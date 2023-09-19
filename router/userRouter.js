@@ -7,7 +7,7 @@ userRouter.post("/register", userController.userRegister)
 userRouter.post("/login", userController.login)
 userRouter.get("/get", validateToken, userController.getUserData)
 userRouter.delete("/delete", validateToken, userController.deleteUserData)
-userRouter.get("/list/:page", userController.getAllUsersData)
+userRouter.get("/list/:page", userController.limitUsersData)
 
 
 module.exports = userRouter;
