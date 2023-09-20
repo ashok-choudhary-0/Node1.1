@@ -24,8 +24,9 @@ const userRegister = async (req, res) => {
 }
 
 const saveToken = async (id, token) => {
-  const currentTime = new Date();
-  const expiry = new Date(currentTime).setHours(currentTime.getHours() + 1);
+  let currentTime = new Date()
+  let expiry = new Date(currentTime);
+  expiry = expiry.setHours(currentTime.getHours() + 1)
   const isUserAlreadyExist = await accessTokenModel.findOne({ where: { user_id: id } })
   if (isUserAlreadyExist) {
     await accessTokenModel.update({ access_token: token, expiry: expiry }, { where: { user_id: id } })
