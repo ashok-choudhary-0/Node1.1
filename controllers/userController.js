@@ -26,8 +26,8 @@ const userRegister = async (req, res) => {
 const saveToken = async (id, token) => {
   const currentTime = new Date();
   const expiry = new Date(currentTime).setHours(currentTime.getHours() + 1);
-  const userAlreadyExist = await accessTokenModel.findOne({ where: { user_id: id } })
-  if (userAlreadyExist) {
+  const isUserAlreadyExist = await accessTokenModel.findOne({ where: { user_id: id } })
+  if (isUserAlreadyExist) {
     await accessTokenModel.update({ access_token: token, expiry: expiry }, { where: { user_id: id } })
   } else {
     await accessTokenModel.create({ user_id: id, access_token: token, expiry: expiry })
@@ -41,7 +41,7 @@ const login = async (req, res) => {
     if (dbUser) {
       const passwordMatch = await bcrypt.compare(password, dbUser.password);
       if (passwordMatch) {
-        const token = md5(`dbUser.username`)
+        const token = md5(`${dbUser.username} + ${dbUser.password}`)
         saveToken(dbUser.id, token)
         res.status(200).send(dbUser)
       } else {
