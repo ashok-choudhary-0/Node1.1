@@ -4,8 +4,8 @@ const address = sequelize.define("address", {
   user_id: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'access_token',
-      key: 'user_id'
+      model: 'user',
+      key: 'id'
     }
   },
   address: {

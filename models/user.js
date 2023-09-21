@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../dbConnection/connection')
+const address = require("./address")
 const user = sequelize.define('user', {
   username: {
     type: DataTypes.STRING(100),
@@ -38,6 +39,7 @@ const user = sequelize.define('user', {
   tableName: "user",
   timestamps: false,
 })
+user.hasMany(address);
 
 
 module.exports = user;
