@@ -8,6 +8,7 @@ userRouter.post("/login", userController.login)
 userRouter.get("/get", validateToken, userController.getUserData)
 userRouter.delete("/delete", validateToken, userController.deleteUserData)
 userRouter.get("/list/:page", userController.limitUsersData)
+userRouter.post("/address",validateToken, userController.userAddress)
 
 
 module.exports = userRouter;
