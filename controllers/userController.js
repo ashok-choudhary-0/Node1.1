@@ -59,19 +59,33 @@ const login = async (req, res) => {
 
 }
 
+// const getUserData = async (req, res) => {
+//   const { id } = req.headers
+//   try {
+//     const userData = await userModel.findOne({ where: { id: id } })
+//     if (userData) {
+//       res.status(200).send(userData)
+//     } else {
+//       res.status(500).send({ message: "Enter valid id" })
+//     }
+//   } catch (err) {
+//     res.status(500).send({ message: err })
+//   }
+// }
 const getUserData = async (req, res) => {
-  const { id } = req.headers
+  const { user_id } = req.body
   try {
-    const userData = await userModel.findOne({ where: { id: id } })
-    if (userData) {
-      res.status(200).send(userData)
-    } else {
-      res.status(500).send({ message: "Enter valid id" })
-    }
+    const userData = await userModel.findOne({
+      where: { id: user_id },
+      include: [{ model: addressModel, where: { user_id }, required: false }],
+    })
+    res.status(200).send(userData)
+
   } catch (err) {
-    res.status(500).send({ message: err })
+    res.status(500).send({ message: err.message })
   }
 }
+
 const deleteUserData = async (req, res) => {
   const { id } = req.headers
   try {
