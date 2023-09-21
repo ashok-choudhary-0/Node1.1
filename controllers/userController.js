@@ -1,6 +1,8 @@
 const userModel = require("../models/user");
 const bcrypt = require('bcrypt');
 const { getRole } = require("../controllers/rolesController")
+const md5 = require('md5');
+const accessTokenModel = require("../models/access_token");
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -21,6 +23,18 @@ const userRegister = async (req, res) => {
   }
 }
 
+const saveToken = async (id, token) => {
+  let currentTime = new Date()
+  let expiry = new Date(currentTime);
+  expiry = expiry.setHours(currentTime.getHours() + 1)
+  const isUserAlreadyExist = await accessTokenModel.findOne({ where: { user_id: id } })
+  if (isUserAlreadyExist) {
+    await accessTokenModel.update({ access_token: token, expiry: expiry }, { where: { user_id: id } })
+  } else {
+    await accessTokenModel.create({ user_id: id, access_token: token, expiry: expiry })
+  }
+}
+
 const login = async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -28,12 +42,14 @@ const login = async (req, res) => {
     if (dbUser) {
       const passwordMatch = await bcrypt.compare(password, dbUser.password);
       if (passwordMatch) {
+        const token = md5(`${dbUser.username} + ${dbUser.password}`)
+        saveToken(dbUser.id, token)
         res.status(200).send(dbUser)
       } else {
-        res.status(500).send({ message: "incorrect password please try again" })
+        res.status(401).send({ message: "incorrect password please try again" })
       }
     } else {
-      res.status(500).send({ message: "user not found" })
+      res.status(401).send({ message: "user not found" })
     }
 
   } catch (err) {
@@ -45,7 +61,7 @@ const login = async (req, res) => {
 const getUserData = async (req, res) => {
   const { id } = req.headers
   try {
-    const userData = await userModel.findOne({ where: { id } })
+    const userData = await userModel.findOne({ where: { id: id } })
     if (userData) {
       res.status(200).send(userData)
     } else {
@@ -82,5 +98,10 @@ const limitUsersData = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
+
+
+
+
+
 
 module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData }
