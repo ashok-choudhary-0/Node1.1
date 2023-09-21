@@ -6,6 +6,8 @@ app.use(bodyParser.json())
 const rolesRouter = require("./router/rolesRouter");
 const userRouter = require("./router/userRouter");
 
+const address = require("./models/address")
+address.sync({ alter: false })
 app.use("/role", rolesRouter)
 app.use("/user", userRouter)
 

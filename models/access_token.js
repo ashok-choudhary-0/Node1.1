@@ -19,4 +19,5 @@ const access_token = sequelize.define("access_token", {
   timestamps: false,
 })
 
+
 module.exports = access_token

@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const { getRole } = require("../controllers/rolesController")
 const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
+const addressModel = require("../models/address")
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -44,7 +45,7 @@ const login = async (req, res) => {
       if (passwordMatch) {
         const token = md5(`${dbUser.username} + ${dbUser.password}`)
         saveToken(dbUser.id, token)
-        res.status(200).send(dbUser)
+        res.status(200).send({ dbUser, token })
       } else {
         res.status(401).send({ message: "incorrect password please try again" })
       }
@@ -98,10 +99,18 @@ const limitUsersData = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
+const userAddress = async (req, res) => {
+  const { address, city, state, pin_code, phone_no, user_id } = req.body
+  try {
+    if (!address || !city || !state || !pin_code || !phone_no) {
+      res.status(400).send({ message: "please fill the required fields" })
+    } else {
+      const userAddress = await addressModel.create({ user_id, address, city, state, pin_code, phone_no })
+      res.status(200).send(userAddress)
+    }
+  } catch (err) {
+    res.status(500).send({ message: err })
+  }
+}
 
-
-
-
-
-
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData }
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress }

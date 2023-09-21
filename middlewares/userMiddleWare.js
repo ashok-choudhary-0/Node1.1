@@ -15,11 +15,13 @@ const validateToken = async (req, res, next) => {
     res.status(404).send({ message: "token not found" })
     return;
   }
-  const userData = await accessTokenModel.findOne({ where: { access_token: token } })
-  if (userData) {
-    const expiryTime = userData.expiry
+
+  const tokenData = await accessTokenModel.findOne({ where: { access_token: token } })
+  if (tokenData) {
+    const expiryTime = tokenData.expiry
     const currentTime = new Date();
     if (currentTime < expiryTime) {
+      req.body = { ...req.body, user_id: tokenData.user_id }
       next();
     } else {
       res.status(401).send({ message: "invalid token" })
