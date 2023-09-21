@@ -3,8 +3,10 @@ const sequelize = require('../dbConnection/connection')
 const address = sequelize.define("address", {
   user_id: {
     type: DataTypes.INTEGER,
-    unique: true,
-    allowNull: false
+    references: {
+      model: 'access_token',
+      key: 'user_id'
+    }
   },
   address: {
     type: DataTypes.STRING(300),
@@ -28,12 +30,12 @@ const address = sequelize.define("address", {
   },
   phone_no: {
     type: DataTypes.STRING(20),
-    unique: true,
     allowNull: false,
     validate: {
       len: { args: [10, 15], msg: "phone number length should be in between 10 to 15" },
       not: { args: ["[a-z]"], msg: "entered character must be either number or +" }
     },
+    unique: false
   }
 }, {
   tableName: "address",

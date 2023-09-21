@@ -20,6 +20,8 @@ const validateToken = async (req, res, next) => {
     const expiryTime = userData.expiry
     const currentTime = new Date();
     if (currentTime < expiryTime) {
+      const user_id = userData.user_id;
+      res.locals.user_id = user_id
       next();
     } else {
       res.status(401).send({ message: "invalid token" })

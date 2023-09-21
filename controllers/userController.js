@@ -100,9 +100,7 @@ const limitUsersData = async (req, res) => {
   }
 }
 const userAddress = async (req, res) => {
-  const { token } = req.headers;
-  const userData = await accessTokenModel.findOne({ where: { access_token: token } })
-  const user_id = userData.user_id;
+  const user_id = res.locals.user_id;
   const { address, city, state, pin_code, phone_no } = req.body
   try {
     if (!address || !city || !state || !pin_code || !phone_no) {
