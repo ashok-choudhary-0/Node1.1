@@ -39,7 +39,7 @@ const user = sequelize.define('user', {
   tableName: "user",
   timestamps: false,
 })
-user.hasMany(address);
+user.hasMany(address, { foreignKey: 'user_id' });
 
 
 module.exports = user;
