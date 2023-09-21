@@ -46,10 +46,10 @@ const login = async (req, res) => {
         saveToken(dbUser.id, token)
         res.status(200).send(dbUser)
       } else {
-        res.status(500).send({ message: "incorrect password please try again" })
+        res.status(401).send({ message: "incorrect password please try again" })
       }
     } else {
-      res.status(500).send({ message: "user not found" })
+      res.status(401).send({ message: "user not found" })
     }
 
   } catch (err) {

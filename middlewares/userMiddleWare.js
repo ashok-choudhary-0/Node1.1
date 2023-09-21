@@ -22,10 +22,10 @@ const validateToken = async (req, res, next) => {
     if (currentTime < expiryTime) {
       next();
     } else {
-      res.status(500).send({ message: "invalid token" })
+      res.status(401).send({ message: "invalid token" })
     }
   } else {
-    res.status(500).send({ message: "token not match any user to database" })
+    res.status(401).send({ message: "token not match any user to database" })
   }
 }
 
