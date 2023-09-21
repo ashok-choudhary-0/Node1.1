@@ -100,8 +100,7 @@ const limitUsersData = async (req, res) => {
   }
 }
 const userAddress = async (req, res) => {
-  const user_id = res.locals.user_id;
-  const { address, city, state, pin_code, phone_no } = req.body
+  const { address, city, state, pin_code, phone_no, user_id } = req.body
   try {
     if (!address || !city || !state || !pin_code || !phone_no) {
       res.status(400).send({ message: "please fill the required fields" })
