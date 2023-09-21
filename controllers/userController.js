@@ -79,11 +79,8 @@ const getUserData = async (req, res) => {
       where: { id: user_id },
       include: [{ model: addressModel, where: { user_id }, required: false }],
     })
-    if (userData) {
-      res.status(200).send(userData)
-    } else {
-      res.status(404).send({ message: "user not found" })
-    }
+    res.status(200).send(userData)
+
   } catch (err) {
     res.status(500).send({ message: err.message })
   }
