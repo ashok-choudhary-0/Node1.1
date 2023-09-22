@@ -36,27 +36,31 @@ const saveToken = async (id, token) => {
   }
 }
 
-const login = async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const dbUser = await userModel.findOne({ where: { username: username } })
-    if (dbUser) {
-      const passwordMatch = await bcrypt.compare(password, dbUser.password);
-      if (passwordMatch) {
-        const token = md5(`${dbUser.username} + ${dbUser.password}`)
-        saveToken(dbUser.id, token)
-        res.status(200).send({ dbUser, token })
-      } else {
-        res.status(401).send({ message: "incorrect password please try again" })
-      }
-    } else {
-      res.status(401).send({ message: "user not found" })
-    }
+// const login = async (req, res) => {
+//   const { username, password } = req.body;
+//   try {
+//     const dbUser = await userModel.findOne({ where: { username: username } })
+//     if (dbUser) {
+//       const passwordMatch = await bcrypt.compare(password, dbUser.password);
+//       if (passwordMatch) {
+//         const token = md5(`${dbUser.username} + ${dbUser.password}`)
+//         saveToken(dbUser.id, token)
+//         res.status(200).send({ dbUser, token })
+//       } else {
+//         res.status(401).send({ message: "incorrect password please try again" })
+//       }
+//     } else {
+//       res.status(401).send({ message: "user not found" })
+//     }
 
-  } catch (err) {
-    res.status(500).send(err)
-  }
+//   } catch (err) {
+//     res.status(500).send(err)
+//   }
 
+// }
+
+const login = (req,res)=>{
+  res.status(200).send({message:"login successfully"})
 }
 // const getUserData = async (req, res) => {
 //   const { id } = req.headers
