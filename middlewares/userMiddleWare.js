@@ -1,7 +1,7 @@
 const accessTokenModel = require("../models/access_token");
 const { initializingPassport } = require("./passportConfig")
-const passport = require('passport');
-initializingPassport(passport)
+
+// initializingPassport(passport)
 
 // const validateToken = async (req, res, next) => {
 //   const { id } = req.headers

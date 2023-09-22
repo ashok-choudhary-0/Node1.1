@@ -1,8 +1,8 @@
 const LocalStrategy = require('passport-local').Strategy;
 const User = require("../models/user");
 const bcrypt = require('bcrypt');
-
-const initializingPassport = (passport) => {
+const passport = require('passport');
+const initializingPassport = (req,res,next) => {
   passport.use(new LocalStrategy(
     async (username, password, done) => {
       try {
@@ -18,9 +18,10 @@ const initializingPassport = (passport) => {
       } catch (error) {
         return done(error);
       }
+     
     }
   ));
-
+  
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
@@ -33,6 +34,8 @@ const initializingPassport = (passport) => {
       done(err, false);
     }
   });
+  next()
 }
+
 
 module.exports = { initializingPassport };
