@@ -1,4 +1,10 @@
 const accessTokenModel = require("../models/access_token");
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const User = require("../models/user");
+const bcrypt = require('bcrypt');
+// const passport = require('passport');
+// initializingPassport(passport)
 
 // const validateToken = async (req, res, next) => {
 //   const { id } = req.headers
@@ -31,4 +37,36 @@ const validateToken = async (req, res, next) => {
   }
 }
 
-module.exports = { validateToken }
+
+const loginAuthentication = (req, res, next) => {
+  passport.use(
+    new LocalStrategy(async (username, password, done) => {
+      try {
+        const dbUser = await User.findOne({ where: { username } });
+        if (!dbUser) {
+          return done(null, false, { message: 'please enter correct username.' });
+        }
+        const passwordMatch = await bcrypt.compare(password, dbUser.password);
+        if (!passwordMatch) {
+          return done(null, false, { message: 'please enter correct password.' });
+        }
+        return done(null, dbUser);
+      } catch (error) {
+        return done(error);
+      }
+    })
+  );
+
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: info.message });
+    }
+    next()
+  })(req, res, next);
+};
+
+
+module.exports = { validateToken, loginAuthentication }
