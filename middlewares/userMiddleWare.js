@@ -65,7 +65,7 @@ const loginAuthentication = (req, res, next) => {
     try {
       const dbUser = await User.findOne({ where: { id } });
       if (!dbUser) {
-        return done(null, false);
+        return done(null, false,{message:"user not found"});
       }
       done(null, dbUser);
     } catch (err) {
