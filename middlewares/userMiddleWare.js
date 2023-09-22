@@ -37,38 +37,51 @@ const validateToken = async (req, res, next) => {
   }
 }
 
+
 const loginAuthentication = (req, res, next) => {
-  passport.use(new LocalStrategy(
-    async (username, password, done) => {
+  passport.use(
+    new LocalStrategy(async (username, password, done) => {
       try {
-        const user = await User.findOne({ where: { username } });
-        if (!user) {
-          return done(null, false, { message: 'Incorrect username.' });
+        const dbUser = await User.findOne({ where: { username } });
+        if (!dbUser) {
+          return done(null, false, { message: 'please enter correct username.' });
         }
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(password, dbUser.password);
         if (!passwordMatch) {
-          return done(null, false, { message: 'Incorrect password.' });
+          return done(null, false, { message: 'please enter correct password.' });
         }
-        return done(null, user);
+        return done(null, dbUser);
       } catch (error) {
         return done(error);
       }
+    })
+  );
 
-    }
-  ));
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
+
   passport.deserializeUser(async (id, done) => {
     try {
-      const user = await User.findOne({ where: { id } });
-      done(null, user);
+      const dbUser = await User.findOne({ where: { id } });
+      if (!dbUser) {
+        return done(null, false);
+      }
+      done(null, dbUser);
     } catch (err) {
-      done(err, false);
+      done(err);
     }
   });
-  passport.authenticate('local', { failureMessage: true })
-  next()
-}
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: info.message });
+    }
+    next()
+  })(req, res, next);
+};
+
 
 module.exports = { validateToken, loginAuthentication }
