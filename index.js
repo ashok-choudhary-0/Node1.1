@@ -5,12 +5,6 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 const rolesRouter = require("./router/rolesRouter");
 const userRouter = require("./router/userRouter");
-const passport = require("passport")
-const expressSession = require("express-session")
-
-app.use(expressSession({ secret: process.env.passportSecKey, resave: false, saveUninitialized: false }))
-app.use(passport.initialize())
-app.use(passport.session())
 
 const address = require("./models/address")
 address.sync({ alter: false })
