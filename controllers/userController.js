@@ -4,7 +4,6 @@ const { getRole } = require("../controllers/rolesController")
 const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
 const addressModel = require("../models/address");
-const { Op } = require("sequelize");
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -130,37 +129,6 @@ const userAddress = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
-// const deleteUsersAddresses = async (req, res) => {
-//   const { addressArray } = req.body
-//   try {
-//     if (addressArray.length == 0) {
-//       res.status(404).send({ message: "please provide userIds to delete the addresses" })
-//     } else {
-//       const countAddress = await addressModel.count({
-//         where: {
-//           user_id: {
-//             [Op.in]: addressArray
-//           }
-//         }
-//       });
-//       console.log(countAddress)
-//       const deletedAddresses = await addressModel.destroy({ where: { user_id: addressArray } })
-//       if (deletedAddresses > 0) {
-//         let addressDeletedMessage;
-//         if (countAddress != addressArray.length) {
-//           addressDeletedMessage = "some user ids not present in the database rest userId addresses deleted successfully"
-//         } else {
-//           addressDeletedMessage = "userId addresses deleted successfully"
-//         }
-//         res.status(200).send({ message: `${addressDeletedMessage}` })
-//       } else {
-//         res.status(200).send({ message: "no address deleted please provide correct userIds" })
-//       }
-//     }
-//   } catch (err) {
-//     res.status(500).send({ message: err })
-//   }
-// }
 const deleteUserAddresses = async (req, res) => {
   const { addressArray, user_id } = req.body
   try {
