@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const { getRole } = require("../controllers/rolesController")
 const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
-const addressModel = require("../models/address")
+const addressModel = require("../models/address");
+const { Op } = require("sequelize");
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -36,32 +37,32 @@ const saveToken = async (id, token) => {
   }
 }
 
-// const login = async (req, res) => {
-//   const { username, password } = req.body;
-//   try {
-//     const dbUser = await userModel.findOne({ where: { username: username } })
-//     if (dbUser) {
-//       const passwordMatch = await bcrypt.compare(password, dbUser.password);
-//       if (passwordMatch) {
-//         const token = md5(`${dbUser.username} + ${dbUser.password}`)
-//         saveToken(dbUser.id, token)
-//         res.status(200).send({ dbUser, token })
-//       } else {
-//         res.status(401).send({ message: "incorrect password please try again" })
-//       }
-//     } else {
-//       res.status(401).send({ message: "user not found" })
-//     }
+const login = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const dbUser = await userModel.findOne({ where: { username: username } })
+    if (dbUser) {
+      const passwordMatch = await bcrypt.compare(password, dbUser.password);
+      if (passwordMatch) {
+        const token = md5(`${dbUser.username} + ${dbUser.password}`)
+        saveToken(dbUser.id, token)
+        res.status(200).send({ dbUser, token })
+      } else {
+        res.status(401).send({ message: "incorrect password please try again" })
+      }
+    } else {
+      res.status(401).send({ message: "user not found" })
+    }
 
-//   } catch (err) {
-//     res.status(500).send(err)
-//   }
+  } catch (err) {
+    res.status(500).send(err)
+  }
 
-// }
-
-const login = (req,res)=>{
-  res.status(200).send({message:"login successfully"})
 }
+
+// const login = (req,res)=>{
+//   res.status(200).send({message:"login successfully"})
+// }
 // const getUserData = async (req, res) => {
 //   const { id } = req.headers
 //   try {
@@ -129,5 +130,21 @@ const userAddress = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
-
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress }
+const deleteUserAddresses = async (req, res) => {
+  const { userAddresses, user_id } = req.body
+  try {
+    if (userAddresses.length === 0) {
+      res.status(404).send({ message: "please provide addressIds to delete the addresses" })
+    } else {
+      const deletedAddresses = await addressModel.destroy({ where: { user_id, id: { [Op.or]: userAddresses } } })
+      if (deletedAddresses > 0) {
+        res.status(200).send({ message: "addresses deleted successfully" })
+      } else {
+        res.status(200).send({ message: "no address deleted please provide correct addressIds or user_id" })
+      }
+    }
+  } catch (err) {
+    res.status(500).send({ message: err })
+  }
+}
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses }
