@@ -11,6 +11,6 @@ userRouter.get("/get", validateToken, userController.getUserData)
 userRouter.delete("/delete", validateToken, userController.deleteUserData)
 userRouter.get("/list/:page", userController.limitUsersData)
 userRouter.post("/address", validateToken, userController.userAddress)
-userRouter.delete("/address", validateToken, userController.deleteUserAddress)
+userRouter.delete("/address", validateToken, userController.deleteUsersAddresses)
 
 module.exports = userRouter;

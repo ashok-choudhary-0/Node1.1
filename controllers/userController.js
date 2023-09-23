@@ -130,8 +130,8 @@ const userAddress = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
-const deleteUserAddress = async (req, res) => {
-  const { addressArray, user_id } = req.body
+const deleteUsersAddresses = async (req, res) => {
+  const { addressArray } = req.body
   try {
     if (addressArray.length == 0) {
       res.status(404).send({ message: "please provide userIds to delete the addresses" })
@@ -160,4 +160,4 @@ const deleteUserAddress = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddress }
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUsersAddresses }
