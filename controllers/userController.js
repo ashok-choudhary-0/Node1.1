@@ -4,6 +4,7 @@ const { getRole } = require("../controllers/rolesController")
 const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
 const addressModel = require("../models/address");
+const { Op } = require("sequelize");
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -135,14 +136,11 @@ const deleteUserAddresses = async (req, res) => {
     if (userAddresses.length === 0) {
       res.status(404).send({ message: "please provide addressIds to delete the addresses" })
     } else {
-      const findAllUserAddresses = await addressModel.findAll({ where: { user_id } })
-      const userAllAddressesIds = findAllUserAddresses.map((obj) => obj.id)
-      const deletedAddresses = await addressModel.destroy({ where: { id: userAddresses, user_id } })
+      const deletedAddresses = await addressModel.destroy({ where: { user_id, id: { [Op.or]: userAddresses } } })
       if (deletedAddresses > 0) {
-        const deletedAddressIds = userAddresses.filter(id => userAllAddressesIds.includes(id))
-        res.status(200).send({ message: `addressIds ${deletedAddressIds} deleted successfully` })
+        res.status(200).send({ message: "addresses deleted successfully" })
       } else {
-        res.status(200).send({ message: "no address deleted please provide correct addressIds" })
+        res.status(200).send({ message: "no address deleted please provide correct addressIds or user_id" })
       }
     }
   } catch (err) {
