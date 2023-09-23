@@ -12,5 +12,7 @@ userRouter.delete("/delete", validateToken, userController.deleteUserData)
 userRouter.get("/list/:page", userController.limitUsersData)
 userRouter.post("/address", validateToken, userController.userAddress)
 userRouter.delete("/address", validateToken, userController.deleteUserAddresses)
+userRouter.post("/forgot-password", userController.passwordResetToken)
+userRouter.post("/verify-reset-password/:password-reset-token", userController.verifyResetPassword)
 
 module.exports = userRouter;

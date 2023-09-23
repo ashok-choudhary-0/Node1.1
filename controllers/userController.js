@@ -5,6 +5,7 @@ const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
 const addressModel = require("../models/address");
 const { Op } = require("sequelize");
+const jwt = require('jsonwebtoken');
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -147,4 +148,35 @@ const deleteUserAddresses = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses }
+
+const passwordResetToken = async (req, res) => {
+  const { user_id } = req.body
+  try {
+    const userData = await userModel.findOne({ where: { id: user_id } })
+    if (userData) {
+      const passwordResetToken = jwt.sign({
+        data: `${userData.user_id} ${userData.password}`
+      }, process.env.jwtSecKey, { expiresIn: 60 * 10 });
+      res.status(200).send(passwordResetToken)
+
+    } else {
+      res.status(404).send({ message: "user not found, please check the user id" })
+    }
+
+  } catch (err) { res.status(500).send(err) }
+
+}
+const verifyResetPassword = async() =>{
+    const resetToken = req.params
+    const {user_id, password} = req.body
+    try{
+      jwt.verify(resetToken,process.env.jwtSecKey)
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      const user = await userModel.update({password:hashedPassword},{where:{id:user_id}})
+      
+    }catch(err){
+      res.status(500).send({message:"reset password token expired"})
+    }
+    
+}
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, passwordResetToken, verifyResetPassword }
