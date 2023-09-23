@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const { getRole } = require("../controllers/rolesController")
 const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
-const addressModel = require("../models/address")
+const addressModel = require("../models/address");
+const { Op } = require("sequelize");
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -133,16 +134,26 @@ const deleteUserAddress = async (req, res) => {
   const { addressArray, user_id } = req.body
   try {
     if (addressArray.length == 0) {
-      res.status(404).send({ message: "please provide addressIds to delete the addresses" })
+      res.status(404).send({ message: "please provide userIds to delete the addresses" })
     } else {
-      const userAllAddresses = await addressModel.findAll({ where: { user_id } })
-      const userAllAddressesIds = userAllAddresses.map((address) => address.id)
-      const deletedAddresses = await addressModel.destroy({ where: { id: addressArray, user_id } })
+      const countAddress = await addressModel.count({
+        where: {
+          user_id: {
+            [Op.in]: addressArray
+          }
+        }
+      });
+      const deletedAddresses = await addressModel.destroy({ where: { user_id: addressArray } })
       if (deletedAddresses > 0) {
-        const deletedAddressIds = addressArray.filter(id => userAllAddressesIds.includes(id))
-        res.status(200).send({ message: `addressIds ${deletedAddressIds} deleted successfully` })
+        let addressDeletedMessage;
+        if (countAddress != addressArray.length) {
+          addressDeletedMessage = "some user ids not present in the database rest userId addresses deleted successfully"
+        } else {
+          addressDeletedMessage = "userId addresses deleted successfully"
+        }
+        res.status(200).send({ message: `${addressDeletedMessage}` })
       } else {
-        res.status(200).send({ message: "no address deleted please provide correct addressIds" })
+        res.status(200).send({ message: "no address deleted please provide correct userIds" })
       }
     }
   } catch (err) {
