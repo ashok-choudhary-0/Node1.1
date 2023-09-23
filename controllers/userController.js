@@ -130,34 +130,55 @@ const userAddress = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
-const deleteUsersAddresses = async (req, res) => {
-  const { addressArray } = req.body
+// const deleteUsersAddresses = async (req, res) => {
+//   const { addressArray } = req.body
+//   try {
+//     if (addressArray.length == 0) {
+//       res.status(404).send({ message: "please provide userIds to delete the addresses" })
+//     } else {
+//       const countAddress = await addressModel.count({
+//         where: {
+//           user_id: {
+//             [Op.in]: addressArray
+//           }
+//         }
+//       });
+//       console.log(countAddress)
+//       const deletedAddresses = await addressModel.destroy({ where: { user_id: addressArray } })
+//       if (deletedAddresses > 0) {
+//         let addressDeletedMessage;
+//         if (countAddress != addressArray.length) {
+//           addressDeletedMessage = "some user ids not present in the database rest userId addresses deleted successfully"
+//         } else {
+//           addressDeletedMessage = "userId addresses deleted successfully"
+//         }
+//         res.status(200).send({ message: `${addressDeletedMessage}` })
+//       } else {
+//         res.status(200).send({ message: "no address deleted please provide correct userIds" })
+//       }
+//     }
+//   } catch (err) {
+//     res.status(500).send({ message: err })
+//   }
+// }
+const deleteUserAddresses = async (req, res) => {
+  const { addressArray, user_id } = req.body
   try {
-    if (addressArray.length == 0) {
-      res.status(404).send({ message: "please provide userIds to delete the addresses" })
+    if (addressArray.length === 0) {
+      res.status(404).send({ message: "please provide addressIds to delete the addresses" })
     } else {
-      const countAddress = await addressModel.count({
-        where: {
-          user_id: {
-            [Op.in]: addressArray
-          }
-        }
-      });
-      const deletedAddresses = await addressModel.destroy({ where: { user_id: addressArray } })
+      const userAllAddresses = await addressModel.findAll({ where: { user_id } })
+      const userAllAddressesIds = userAllAddresses.map((obj) => obj.id)
+      const deletedAddresses = await addressModel.destroy({ where: { id: addressArray, user_id } })
       if (deletedAddresses > 0) {
-        let addressDeletedMessage;
-        if (countAddress != addressArray.length) {
-          addressDeletedMessage = "some user ids not present in the database rest userId addresses deleted successfully"
-        } else {
-          addressDeletedMessage = "userId addresses deleted successfully"
-        }
-        res.status(200).send({ message: `${addressDeletedMessage}` })
+        const deletedAddressIds = addressArray.filter(id => userAllAddressesIds.includes(id))
+        res.status(200).send({ message: `addressIds ${deletedAddressIds} deleted successfully` })
       } else {
-        res.status(200).send({ message: "no address deleted please provide correct userIds" })
+        res.status(200).send({ message: "no address deleted please provide correct addressIds" })
       }
     }
   } catch (err) {
     res.status(500).send({ message: err })
   }
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUsersAddresses }
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses }
