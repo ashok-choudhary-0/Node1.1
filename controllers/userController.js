@@ -130,16 +130,16 @@ const userAddress = async (req, res) => {
   }
 }
 const deleteUserAddresses = async (req, res) => {
-  const { addressArray, user_id } = req.body
+  const { userAddresses, user_id } = req.body
   try {
-    if (addressArray.length === 0) {
+    if (userAddresses.length === 0) {
       res.status(404).send({ message: "please provide addressIds to delete the addresses" })
     } else {
-      const userAllAddresses = await addressModel.findAll({ where: { user_id } })
-      const userAllAddressesIds = userAllAddresses.map((obj) => obj.id)
-      const deletedAddresses = await addressModel.destroy({ where: { id: addressArray, user_id } })
+      const findAllUserAddresses = await addressModel.findAll({ where: { user_id } })
+      const userAllAddressesIds = findAllUserAddresses.map((obj) => obj.id)
+      const deletedAddresses = await addressModel.destroy({ where: { id: userAddresses, user_id } })
       if (deletedAddresses > 0) {
-        const deletedAddressIds = addressArray.filter(id => userAllAddressesIds.includes(id))
+        const deletedAddressIds = userAddresses.filter(id => userAllAddressesIds.includes(id))
         res.status(200).send({ message: `addressIds ${deletedAddressIds} deleted successfully` })
       } else {
         res.status(200).send({ message: "no address deleted please provide correct addressIds" })
