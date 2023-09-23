@@ -136,7 +136,7 @@ const deleteUserAddress = async (req, res) => {
       res.status(404).send({ message: "please provide addressIds to delete the addresses" })
     } else {
       const userAllAddresses = await addressModel.findAll({ where: { user_id } })
-      const userAllAddressesIds = userAllAddresses.map((obj) => obj.id)
+      const userAllAddressesIds = userAllAddresses.map((address) => address.id)
       const deletedAddresses = await addressModel.destroy({ where: { id: addressArray, user_id } })
       if (deletedAddresses > 0) {
         const deletedAddressIds = addressArray.filter(id => userAllAddressesIds.includes(id))
