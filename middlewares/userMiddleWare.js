@@ -21,7 +21,6 @@ const validateToken = async (req, res, next) => {
     res.status(404).send({ message: "token not found" })
     return;
   }
-
   const tokenData = await accessTokenModel.findOne({ where: { access_token: token } })
   if (tokenData) {
     const expiryTime = tokenData.expiry

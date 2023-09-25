@@ -5,6 +5,7 @@ const md5 = require('md5');
 const accessTokenModel = require("../models/access_token");
 const addressModel = require("../models/address");
 const { Op } = require("sequelize");
+const jwt = require('jsonwebtoken');
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -147,4 +148,46 @@ const deleteUserAddresses = async (req, res) => {
     res.status(500).send({ message: err })
   }
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses }
+
+const forgotPassword = async (req, res) => {
+  const { username } = req.body
+  try {
+    const userData = await userModel.findOne({ where: { username } })
+    if (userData) {
+      const passwordResetToken = jwt.sign({
+        data: `${userData.username} ${userData.password}`
+      }, process.env.jwtSecKey, { expiresIn: 60 * 10 });
+      await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
+      res.status(200).send(passwordResetToken)
+
+    } else {
+      res.status(404).send({ message: "user not found, please check the username" })
+    }
+
+  } catch (err) { res.status(500).send(err) }
+
+}
+const verifyResetPasswordToken = async (req, res) => {
+  const resetToken = req.params.passwordResetToken
+  const { new_password } = req.body
+  if (!new_password) {
+    res.status(404).send({ message: "new password will not be empty" })
+  }
+  try {
+    const verifyToken = jwt.verify(resetToken, process.env.jwtSecKey)
+
+    if (verifyToken) {
+      const hashedPassword = bcrypt.hashSync(new_password, 10);
+      const updatedUserData = await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { passwordResetToken: resetToken } })
+      res.status(200).send({ message: "user password updated successfully", updatedUserData })
+    } else {
+      res.status(200).send({ message: "user password reset token expired" })
+    }
+
+
+  } catch (err) {
+    res.status(500).send(err)
+  }
+
+}
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken }

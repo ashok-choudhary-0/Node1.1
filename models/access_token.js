@@ -13,7 +13,7 @@ const access_token = sequelize.define("access_token", {
   expiry: {
     type: DataTypes.DATE,
     allowNull: false,
-  }
+  },
 }, {
   tableName: "access_token",
   timestamps: false,

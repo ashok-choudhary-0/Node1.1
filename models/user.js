@@ -28,6 +28,10 @@ const user = sequelize.define('user', {
     type: DataTypes.STRING(100),
     allowNull: false
   },
+  passwordResetToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   roleId: {
     type: DataTypes.INTEGER,
     references: {
