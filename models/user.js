@@ -30,7 +30,6 @@ const user = sequelize.define('user', {
   },
   jwtToken: {
     type: DataTypes.STRING,
-    required: false,
     allowNull: true
   },
   roleId: {
