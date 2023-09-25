@@ -149,7 +149,7 @@ const deleteUserAddresses = async (req, res) => {
   }
 }
 
-const passwordResetToken = async (req, res) => {
+const forgotPassword = async (req, res) => {
   const { username } = req.body
   try {
     const userData = await userModel.findOne({ where: { username } })
@@ -169,20 +169,24 @@ const passwordResetToken = async (req, res) => {
 }
 const verifyResetPasswordToken = async (req, res) => {
   const resetToken = req.params.passwordResetToken
-  const { username, new_password } = req.body
+  const { new_password } = req.body
   try {
-    const userData = await userModel.findOne({ where: { username } })
-    const verifyToken = jwt.verify(resetToken, process.env.jwtSecKey, { expiresIn: 60 * 60 })
-    if (userData.passwordResetToken === resetToken && verifyToken) {
-      const hashedPassword = bcrypt.hashSync(new_password, 10);
-      await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { username } })
-      res.status(200).send({ message: "user password updated successfully" })
-    } else {
-      res.status(200).send({ message: "user password reset token expired" })
+    const verifyToken = jwt.verify(resetToken, process.env.jwtSecKey, { expiresIn: 60 * 10 })
+    if(new_password){
+      if (verifyToken) {
+        const hashedPassword = bcrypt.hashSync(new_password, 10);
+        await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { passwordResetToken:resetToken } })
+        res.status(200).send({ message: "user password updated successfully" })
+      } else {
+        res.status(200).send({ message: "user password reset token expired" })
+      }
+    }else{
+      res.status(404).send({message:"new password will not be empty"})
     }
+   
   } catch (err) {
     res.status(500).send(err)
   }
 
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, passwordResetToken, verifyResetPasswordToken }
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken }
