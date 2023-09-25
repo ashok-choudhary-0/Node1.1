@@ -150,14 +150,14 @@ const deleteUserAddresses = async (req, res) => {
 }
 
 const passwordResetToken = async (req, res) => {
-  const { user_id } = req.body
+  const { username } = req.body
   try {
-    const userData = await userModel.findOne({ where: { id: user_id } })
+    const userData = await userModel.findOne({ where: { username } })
     if (userData) {
       const passwordResetToken = jwt.sign({
-        data: `${userData.user_id} ${userData.password}`
+        data: `${userData.username} ${userData.password}`
       }, process.env.jwtSecKey);
-      await userModel.update({ passwordResetToken: passwordResetToken }, { where: { id: user_id } })
+      await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
       res.status(200).send(passwordResetToken)
 
     } else {
@@ -169,14 +169,13 @@ const passwordResetToken = async (req, res) => {
 }
 const verifyResetPasswordToken = async (req, res) => {
   const resetToken = req.params.passwordResetToken
-  const { user_id, old_password, new_password } = req.body
+  const { username, new_password } = req.body
   try {
-    const userData = await userModel.findOne({ where: { id: user_id } })
+    const userData = await userModel.findOne({ where: { username } })
     const verifyToken = jwt.verify(resetToken, process.env.jwtSecKey, { expiresIn: 60 * 60 })
-    const passwordMatch = bcrypt.compare(old_password, userData.password)
-    if (userData.passwordResetToken === resetToken && verifyToken && passwordMatch) {
-      const hashedPassword = bcrypt.hashSync(new_password,10);
-      await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { id: user_id } })
+    if (userData.passwordResetToken === resetToken && verifyToken) {
+      const hashedPassword = bcrypt.hashSync(new_password, 10);
+      await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { username } })
       res.status(200).send({ message: "user password updated successfully" })
     } else {
       res.status(200).send({ message: "user password reset token expired" })
