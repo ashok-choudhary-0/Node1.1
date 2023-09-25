@@ -6,6 +6,8 @@ const accessTokenModel = require("../models/access_token");
 const addressModel = require("../models/address");
 const { Op } = require("sequelize");
 const jwt = require('jsonwebtoken');
+
+
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -183,11 +185,24 @@ const verifyResetPasswordToken = async (req, res) => {
     } else {
       res.status(200).send({ message: "user password reset token expired" })
     }
-
-
   } catch (err) {
     res.status(500).send(err)
   }
-
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken }
+const uploadProfile = async (req, res) => {
+  const username = req.body.username;
+  if (!username) {
+    res.status(404).send({ message: "please provide username" })
+  }
+  const profileImagePath = req.file;
+  try {
+    const userData = await userModel.findOne({ where: { username } })
+    if (userData) {
+      await userModel.update({ profileImage: profileImagePath }, { where: { username } })
+      res.status(200).send({ message: "file uploaded successfully", filePath: profileImagePath })
+    }
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken, uploadProfile }
