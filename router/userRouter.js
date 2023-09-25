@@ -2,7 +2,7 @@ const express = require("express")
 const userRouter = express.Router();
 const userController = require("../controllers/userController")
 const { validateToken } = require("../middlewares/userMiddleWare")
-const { loginAuthentication } = require("../middlewares/userMiddleWare")
+
 
 userRouter.post("/register", userController.userRegister)
 // userRouter.post("/login", loginAuthentication, userController.login)
@@ -13,6 +13,6 @@ userRouter.get("/list/:page", userController.limitUsersData)
 userRouter.post("/address", validateToken, userController.userAddress)
 userRouter.delete("/address", validateToken, userController.deleteUserAddresses)
 userRouter.post("/forgot-password", userController.passwordResetToken)
-userRouter.post("/verify-reset-password/:password-reset-token", userController.verifyResetPassword)
+userRouter.post("/verify-reset-password/:passwordResetToken", userController.verifyResetPassword)
 
 module.exports = userRouter;

@@ -28,6 +28,11 @@ const user = sequelize.define('user', {
     type: DataTypes.STRING(100),
     allowNull: false
   },
+  jwtToken: {
+    type: DataTypes.STRING,
+    required: false,
+    allowNull: true
+  },
   roleId: {
     type: DataTypes.INTEGER,
     references: {

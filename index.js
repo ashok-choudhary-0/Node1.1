@@ -7,7 +7,7 @@ const rolesRouter = require("./router/rolesRouter");
 const userRouter = require("./router/userRouter");
 
 const address = require("./models/address")
-address.sync({ alter: false })
+address.sync({ force: true })
 app.use("/role", rolesRouter)
 app.use("/user", userRouter)
 
