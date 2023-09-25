@@ -161,7 +161,7 @@ const forgotPassword = async (req, res) => {
       res.status(200).send(passwordResetToken)
 
     } else {
-      res.status(404).send({ message: "user not found, please check the user id" })
+      res.status(404).send({ message: "user not found, please check the username" })
     }
 
   } catch (err) { res.status(500).send(err) }
@@ -172,18 +172,18 @@ const verifyResetPasswordToken = async (req, res) => {
   const { new_password } = req.body
   try {
     const verifyToken = jwt.verify(resetToken, process.env.jwtSecKey, { expiresIn: 60 * 10 })
-    if(new_password){
+    if (new_password) {
       if (verifyToken) {
         const hashedPassword = bcrypt.hashSync(new_password, 10);
-        await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { passwordResetToken:resetToken } })
-        res.status(200).send({ message: "user password updated successfully" })
+        const updatedPassword = await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { passwordResetToken: resetToken } })
+        res.status(200).send({ message: "user password updated successfully", updatedPassword })
       } else {
         res.status(200).send({ message: "user password reset token expired" })
       }
-    }else{
-      res.status(404).send({message:"new password will not be empty"})
+    } else {
+      res.status(404).send({ message: "new password will not be empty" })
     }
-   
+
   } catch (err) {
     res.status(500).send(err)
   }
