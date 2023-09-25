@@ -156,8 +156,8 @@ const passwordResetToken = async (req, res) => {
     if (userData) {
       const passwordResetToken = jwt.sign({
         data: `${userData.user_id} ${userData.password}`
-      }, process.env.jwtSecKey, { expiresIn: 60 * 10 });
-      await userModel.update({ jwtToken: passwordResetToken }, { where: { id: user_id } })
+      }, process.env.jwtSecKey);
+      await userModel.update({ passwordResetToken: passwordResetToken }, { where: { id: user_id } })
       res.status(200).send(passwordResetToken)
 
     } else {
@@ -167,22 +167,23 @@ const passwordResetToken = async (req, res) => {
   } catch (err) { res.status(500).send(err) }
 
 }
-const verifyResetPassword = async (req, res) => {
+const verifyResetPasswordToken = async (req, res) => {
   const resetToken = req.params.passwordResetToken
-  const { user_id, password } = req.body
+  const { user_id, old_password, new_password } = req.body
   try {
     const userData = await userModel.findOne({ where: { id: user_id } })
-    const verifyToken = jwt.verify(resetToken, process.env.jwtSecKey)
-    if (userData.jwtToken === resetToken && verifyToken) {
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      await userModel.update({ password: hashedPassword, jwtToken: "" }, { where: { id: user_id } })
-      res.status(200).send({ message: "password updated successfully" })
+    const verifyToken = jwt.verify(resetToken, process.env.jwtSecKey, { expiresIn: 60 * 60 })
+    const passwordMatch = bcrypt.compare(old_password, userData.password)
+    if (userData.passwordResetToken === resetToken && verifyToken && passwordMatch) {
+      const hashedPassword = bcrypt.hashSync(new_password,10);
+      await userModel.update({ password: hashedPassword, passwordResetToken: "" }, { where: { id: user_id } })
+      res.status(200).send({ message: "user password updated successfully" })
     } else {
-      res.status(200).send({ message: "password reset token expired" })
+      res.status(200).send({ message: "user password reset token expired" })
     }
   } catch (err) {
     res.status(500).send(err)
   }
 
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, passwordResetToken, verifyResetPassword }
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, passwordResetToken, verifyResetPasswordToken }

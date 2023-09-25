@@ -28,7 +28,7 @@ const user = sequelize.define('user', {
     type: DataTypes.STRING(100),
     allowNull: false
   },
-  jwtToken: {
+  passwordResetToken: {
     type: DataTypes.STRING,
     allowNull: true
   },
