@@ -157,8 +157,8 @@ const forgotPassword = async (req, res) => {
       const passwordResetToken = jwt.sign({
         data: `${userData.username} ${userData.password}`
       }, process.env.jwtSecKey);
-      const passwordUpdatedData = await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
-      res.status(200).send(passwordUpdatedData)
+      await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
+      res.status(200).send(passwordResetToken)
 
     } else {
       res.status(404).send({ message: "user not found, please check the username" })
