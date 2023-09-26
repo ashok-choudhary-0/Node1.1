@@ -7,7 +7,6 @@ const addressModel = require("../models/address");
 const { Op } = require("sequelize");
 const jwt = require('jsonwebtoken');
 
-
 const userRegister = async (req, res) => {
   try {
     const { username, password, confirmPassword, email, firstName, lastName, roleId } = req.body
@@ -189,18 +188,18 @@ const verifyResetPasswordToken = async (req, res) => {
     res.status(500).send(err)
   }
 }
-const uploadProfile = async (req, res) => {
+const addUserProfileImage = async (req, res) => {
   const username = req.params.username;
   try {
-    const userData = await userModel.findOne({ where: { username } })
-    if (userData) {
+    const findUser = await userModel.findOne({ where: { username } })
+    if (findUser) {
       await userModel.update({ profileImage: req.file.path }, { where: { username } })
       res.status(200).send({ message: "file uploaded successfully", filePath: req.file.path })
-    }else{
-      res.status(401).send({message:"username not found please check the username"})
+    } else {
+      res.status(401).send({ message: "username not found please check the username" })
     }
   } catch (err) {
     res.status(500).send(err)
   }
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken, uploadProfile }
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken, addUserProfileImage }
