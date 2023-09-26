@@ -15,6 +15,6 @@ userRouter.delete("/address", validateToken, userController.deleteUserAddresses)
 userRouter.post("/forgot-password", userController.forgotPassword)
 userRouter.post("/verify-reset-password/:passwordResetToken", userController.verifyResetPasswordToken)
 userRouter.post("/profile-image", validateToken, uploads.single('image'), userController.addUserProfileImage)
-userRouter.post("/profile-image-firebase", firebaseUpload.single('image'), userController.saveUserImageToFirebase)
+userRouter.post("/profile-image-firebase", validateToken, firebaseUpload.single('image'), userController.saveUserImageToFirebase)
 
 module.exports = userRouter;
