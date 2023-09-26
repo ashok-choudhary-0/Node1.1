@@ -6,8 +6,9 @@ const accessTokenModel = require("../models/access_token");
 const addressModel = require("../models/address");
 const { Op } = require("sequelize");
 const jwt = require('jsonwebtoken');
-const {getStorage, getDownloadURL } = require("firebase/storage");
+const { getStorage, getDownloadURL } = require("firebase/storage");
 const firebase = require("firebase/storage");
+const nodemailer = require("nodemailer");
 
 
 
@@ -156,6 +157,13 @@ const deleteUserAddresses = async (req, res) => {
 
 const forgotPassword = async (req, res) => {
   const { username } = req.body
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.nodemailerEmail,
+      pass: process.env.nodemailerEmailPassword
+    }
+  })
   try {
     const userData = await userModel.findOne({ where: { username } })
     if (userData) {
@@ -163,8 +171,21 @@ const forgotPassword = async (req, res) => {
         data: `${userData.username} ${userData.password}`
       }, process.env.jwtSecKey, { expiresIn: 60 * 10 });
       await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
-      res.status(200).send(passwordResetToken)
 
+
+      const info = {
+        from: '"ashok.kumar@innotechteam.in',
+        to: "ashok03012000@gmail.com",
+        subject: "conformation for password reset",
+        html: `<b>http://localhost:8000/user/forgot-password/${passwordResetToken}</b>`,
+      }
+      transporter.sendMail(info, (err, result) => {
+        if (err) {
+          res.status(500).send(err)
+        } else {
+          res.status(200).send({ message: "mail sent successfully", info })
+        }
+      })
     } else {
       res.status(404).send({ message: "user not found, please check the username" })
     }
@@ -217,4 +238,7 @@ const saveUserImageToFirebase = async (req, res) => {
     res.status(500).send(err)
   }
 }
+
+
+
 module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken, addUserProfileImage, saveUserImageToFirebase }
