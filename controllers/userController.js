@@ -189,9 +189,9 @@ const verifyResetPasswordToken = async (req, res) => {
   }
 }
 const addUserProfileImage = async (req, res) => {
-  const { access_token } = req.headers
+  const { token } = req.headers
   try {
-    const accessTokenData = await accessTokenModel.findOne({ where: { access_token } })
+    const accessTokenData = await accessTokenModel.findOne({ where: { access_token:token } })
     await userModel.findOne({ where: { id: accessTokenData.user_id } })
     await userModel.update({ profileImage: req.file.path }, { where: { id: accessTokenData.user_id } })
     res.status(200).send({ message: "file uploaded successfully", filePath: req.file.path })
