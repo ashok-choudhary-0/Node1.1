@@ -6,6 +6,10 @@ const accessTokenModel = require("../models/access_token");
 const addressModel = require("../models/address");
 const { Op } = require("sequelize");
 const jwt = require('jsonwebtoken');
+const {getStorage, getDownloadURL } = require("firebase/storage");
+const firebase = require("firebase/storage");
+
+
 
 const userRegister = async (req, res) => {
   try {
@@ -191,7 +195,7 @@ const verifyResetPasswordToken = async (req, res) => {
 const addUserProfileImage = async (req, res) => {
   const { token } = req.headers
   try {
-    const accessTokenData = await accessTokenModel.findOne({ where: { access_token:token } })
+    const accessTokenData = await accessTokenModel.findOne({ where: { access_token: token } })
     await userModel.findOne({ where: { id: accessTokenData.user_id } })
     await userModel.update({ profileImage: req.file.path }, { where: { id: accessTokenData.user_id } })
     res.status(200).send({ message: "file uploaded successfully", filePath: req.file.path })
@@ -199,4 +203,18 @@ const addUserProfileImage = async (req, res) => {
     res.status(500).send(err)
   }
 }
-module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken, addUserProfileImage }
+
+const saveUserImageToFirebase = async (req, res) => {
+  const file = req.file;
+  const storage = getStorage();
+  const fileName = Date.now() + '-' + file.originalname
+  try {
+    const imageRef = firebase.ref(storage, `/files/${fileName}`)
+    await firebase.uploadBytesResumable(imageRef, req.file.buffer)
+    const downloadURL = await getDownloadURL(imageRef);
+    res.status(200).send({ message: "file uploaded successfully", downloadURL })
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+module.exports = { userRegister, login, getUserData, deleteUserData, limitUsersData, userAddress, deleteUserAddresses, forgotPassword, verifyResetPasswordToken, addUserProfileImage, saveUserImageToFirebase }

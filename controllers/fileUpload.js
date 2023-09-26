@@ -1,4 +1,5 @@
 const multer = require('multer')
+
 const upload = multer.diskStorage({
   destination: function (req, file, cb) {
     return cb(null, './uploads')
@@ -8,4 +9,5 @@ const upload = multer.diskStorage({
   }
 })
 const uploads = multer({ storage: upload })
-module.exports = { uploads }
+const firebaseUpload = multer({ storage: multer.memoryStorage() })
+module.exports = { uploads, firebaseUpload }
