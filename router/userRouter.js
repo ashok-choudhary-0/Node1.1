@@ -2,6 +2,7 @@ const express = require("express")
 const userRouter = express.Router();
 const userController = require("../controllers/userController")
 const { validateToken } = require("../middlewares/userMiddleWare")
+const { uploads } = require("../controllers/fileUpload")
 
 
 userRouter.post("/register", userController.userRegister)
@@ -14,5 +15,6 @@ userRouter.post("/address", validateToken, userController.userAddress)
 userRouter.delete("/address", validateToken, userController.deleteUserAddresses)
 userRouter.post("/forgot-password", userController.forgotPassword)
 userRouter.post("/verify-reset-password/:passwordResetToken", userController.verifyResetPasswordToken)
+userRouter.post("/profile-image", validateToken, uploads.single('image'), userController.addUserProfileImage)
 
 module.exports = userRouter;
