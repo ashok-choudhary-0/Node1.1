@@ -189,15 +189,12 @@ const verifyResetPasswordToken = async (req, res) => {
   }
 }
 const addUserProfileImage = async (req, res) => {
-  const username = req.params.username;
+  const { access_token } = req.headers
   try {
-    const findUser = await userModel.findOne({ where: { username } })
-    if (findUser) {
-      await userModel.update({ profileImage: req.file.path }, { where: { username } })
-      res.status(200).send({ message: "file uploaded successfully", filePath: req.file.path })
-    } else {
-      res.status(401).send({ message: "username not found please check the username" })
-    }
+    const accessTokenData = await accessTokenModel.findOne({ where: { access_token } })
+    await userModel.findOne({ where: { id: accessTokenData.user_id } })
+    await userModel.update({ profileImage: req.file.path }, { where: { id: accessTokenData.user_id } })
+    res.status(200).send({ message: "file uploaded successfully", filePath: req.file.path })
   } catch (err) {
     res.status(500).send(err)
   }

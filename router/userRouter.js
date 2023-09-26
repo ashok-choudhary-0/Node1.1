@@ -15,6 +15,6 @@ userRouter.post("/address", validateToken, userController.userAddress)
 userRouter.delete("/address", validateToken, userController.deleteUserAddresses)
 userRouter.post("/forgot-password", userController.forgotPassword)
 userRouter.post("/verify-reset-password/:passwordResetToken", userController.verifyResetPasswordToken)
-userRouter.post("/profile-image/:username", uploads.single('image'),userController.addUserProfileImage)
+userRouter.post("/profile-image", uploads.single('image'),userController.addUserProfileImage)
 
 module.exports = userRouter;
