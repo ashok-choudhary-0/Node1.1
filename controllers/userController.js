@@ -172,12 +172,11 @@ const forgotPassword = async (req, res) => {
       }, process.env.jwtSecKey, { expiresIn: 60 * 10 });
       await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
 
-
       const info = {
         from: '"ashok.kumar@innotechteam.in',
         to: "ashok03012000@gmail.com",
         subject: "conformation for password reset",
-        html: `<b>http://localhost:8000/user/forgot-password/${passwordResetToken}</b>`,
+        html: `<b>Password reset url:->  http://localhost:8000/user/forgot-password/${passwordResetToken}</b>`,
       }
       transporter.sendMail(info, (err, result) => {
         if (err) {
@@ -191,7 +190,6 @@ const forgotPassword = async (req, res) => {
     }
 
   } catch (err) { res.status(500).send(err) }
-
 }
 const verifyResetPasswordToken = async (req, res) => {
   const resetToken = req.params.passwordResetToken
