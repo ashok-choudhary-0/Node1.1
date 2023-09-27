@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 const jwt = require('jsonwebtoken');
 const { getStorage, getDownloadURL } = require("firebase/storage");
 const firebase = require("firebase/storage");
-const nodemailer = require("nodemailer");
+const { transporter } = require("../helper/nodemailer");
 
 
 
@@ -157,7 +157,6 @@ const deleteUserAddresses = async (req, res) => {
 
 const forgotPassword = async (req, res) => {
   const { username } = req.body
-
   try {
     const userData = await userModel.findOne({ where: { username } })
     if (userData) {
@@ -166,16 +165,10 @@ const forgotPassword = async (req, res) => {
       }, process.env.jwtSecKey, { expiresIn: 60 * 10 });
       await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
 
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.nodemailerEmail,
-          pass: process.env.nodemailerEmailPassword
-        }
-      })
+      transporter;
       const emailInformation = {
         from: process.env.senderMail,
-        to: process.env.receiverMail,
+        to: process.env.usersMail,
         subject: "conformation for password reset",
         html: `
         <div style="font-family:sans-serif; border-radius: 5px; background-color: black; color:white; border:1px solid white; padding: 20px;">
@@ -198,7 +191,6 @@ const forgotPassword = async (req, res) => {
     } else {
       res.status(404).send({ message: "User not found, please check the username" })
     }
-
   } catch (err) { res.status(500).send(err) }
 }
 const verifyResetPasswordToken = async (req, res) => {
