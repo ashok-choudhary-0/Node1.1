@@ -157,13 +157,7 @@ const deleteUserAddresses = async (req, res) => {
 
 const forgotPassword = async (req, res) => {
   const { username } = req.body
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.nodemailerEmail,
-      pass: process.env.nodemailerEmailPassword
-    }
-  })
+
   try {
     const userData = await userModel.findOne({ where: { username } })
     if (userData) {
@@ -172,21 +166,37 @@ const forgotPassword = async (req, res) => {
       }, process.env.jwtSecKey, { expiresIn: 60 * 10 });
       await userModel.update({ passwordResetToken: passwordResetToken }, { where: { username } })
 
-      const info = {
-        from: '"ashok.kumar@innotechteam.in',
-        to: "ashok03012000@gmail.com",
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.nodemailerEmail,
+          pass: process.env.nodemailerEmailPassword
+        }
+      })
+      const emailInformation = {
+        from: process.env.senderMail,
+        to: process.env.receiverMail,
         subject: "conformation for password reset",
-        html: `<b>Password reset url:->  http://localhost:8000/user/forgot-password/${passwordResetToken}</b>`,
+        html: `
+        <div style="font-family:sans-serif; border-radius: 5px; background-color: black; color:white; border:1px solid white; padding: 20px;">
+          <h2 style="color:white;">Password Reset Confirmation</h2>
+          <p>Hello,</p>
+          <p>Your password reset request has been received. To reset your password, click on the link below:</p>
+          <p style="text-align:center;"><a href="http://localhost:8000/user/forgot-password/${passwordResetToken}" style="margin: 10px 1px; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;">Reset Password</a></p>
+          <p>If you did not request this password reset, please ignore this email.</p>
+          <p>Thank you!</p>
+        </div>
+      `,
       }
-      transporter.sendMail(info, (err, result) => {
+      transporter.sendMail(emailInformation, (err, result) => {
         if (err) {
           res.status(500).send(err)
         } else {
-          res.status(200).send({ message: "mail sent successfully", info })
+          res.status(200).send({ message: "Mail Sent Successfully", emailInformation })
         }
       })
     } else {
-      res.status(404).send({ message: "user not found, please check the username" })
+      res.status(404).send({ message: "User not found, please check the username" })
     }
 
   } catch (err) { res.status(500).send(err) }
